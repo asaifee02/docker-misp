@@ -24,6 +24,7 @@ ENTRYPOINT_PID_FILE="/entrypoint_apache.install"
 setup_cake_config(){
     sed -i "s/'host' => 'localhost'.*/'host' => '$REDIS_FQDN',          \/\/ Redis server hostname/" "/var/www/MISP/app/Plugin/CakeResque/Config/config.php"
     sed -i "s/'host' => '127.0.0.1'.*/'host' => '$REDIS_FQDN',          \/\/ Redis server hostname/" "/var/www/MISP/app/Plugin/CakeResque/Config/config.php"
+    sed -i "s/'password' => null.*/'password' => '$REDIS_PASSWORD',          \/\/ Redis password/" "/var/www/MISP/app/Plugin/CakeResque/Config/config.php"
 }
 
 init_misp_config(){

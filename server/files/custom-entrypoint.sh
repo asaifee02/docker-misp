@@ -1,5 +1,6 @@
 #!/bin/bash
 
+MISP_APP_CONFIG_PATH=/var/www/MISP/app/Config
 [ -z "$GNUPGHOME" ] && GNUPGHOME="/gnupg"
 [ -z "$GNUPG_PASSPHRASE" ] && GNUPG_PASSPHRASE="yA15^x#*xJXHW4I3oC2F3FzmD92bMpG%"
 [ -z "$GNUPG_EMAIL" ] && GNUPG_EMAIL=$EMAIL
@@ -7,8 +8,8 @@
 
 if [[ ! -d "${GNUPGHOME}" ]]; then
   echo -e "\nCreating Home Directory for GNUPG: ${GNUPGHOME}"
-  runuser -u www-data -- mkdir -p ${GNUPGHOME}
-  runuser -u www-data -- gpg --batch --gen-key <<EOF
+  mkdir -p ${GNUPGHOME}
+  gpg --batch --gen-key <<EOF
 %echo Generating GNUPG key...
 Key-Type: 1
 Key-Length: 4096
@@ -21,6 +22,10 @@ Expire-Date: 0
 %commit
 %echo Generated GNUPG Key!
 EOF
+  echo -e "\nChanging ownership of ${GNUPGHOME} to user www-data..."
+  chown -R www-data:www-data /gnupg
+  ls -l /gnupg
+  echo -e "\nDone configuring GNUPG!"
 fi
 
 # Enable OIDC Auth
