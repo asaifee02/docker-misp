@@ -51,7 +51,7 @@ init_misp_config(){
     /var/www/MISP/app/Console/cake Admin setSetting "MISP.baseurl" "$HOSTNAME"
     /var/www/MISP/app/Console/cake Admin setSetting "MISP.external_baseurl" "$HOSTNAME"
     /var/www/MISP/app/Console/cake Admin setSetting "MISP.org" "$ORGNAME"
-    /var/www/MISP/app/Console/cake Admin setSetting "MISP.host_org_id" 1
+    /var/www/MISP/app/Console/cake Admin setSetting "MISP.host_org_id" "$ORGNAME"
     /var/www/MISP/app/Console/cake Admin setSetting "MISP.email" "$EMAIL"
     /var/www/MISP/app/Console/cake Admin setSetting "MISP.contact" "$CONTACT"
     /var/www/MISP/app/Console/cake Admin setSetting "MISP.disable_emailing" "$DISABLE_EMAIL"
