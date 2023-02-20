@@ -37,6 +37,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
             libglib2.0-0 \
             libzbar0 \
             libxrender1 \
+            ffmpeg \
+            libsm6 \
             libxext6 \
             libpoppler-cpp0v5 \
         && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
