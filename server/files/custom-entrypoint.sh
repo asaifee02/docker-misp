@@ -6,7 +6,7 @@ MISP_APP_CONFIG_PATH=/var/www/MISP/app/Config
 [ -z "$GNUPG_EMAIL" ] && GNUPG_EMAIL=$EMAIL
 [ -z "$OIDC_ENABLED" ] && OIDC_ENABLED="false"
 
-if [[ ! -d "${GNUPGHOME}" ]]; then
+if [[ ! -f "${GNUPGHOME}/pubring.kbx" ]]; then
   echo -e "\nCreating Home Directory for GNUPG: ${GNUPGHOME}"
   mkdir -p ${GNUPGHOME}
   gpg --batch --gen-key <<EOF
