@@ -68,12 +68,12 @@ init_misp_config(){
     /var/www/MISP/app/Console/cake Admin setSetting "GnuPG.password" "$GNUPG_PASSPHRASE"
 
     # Plugin Settings
-    /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_enable" true
-    /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_audit_notifications_enable" true
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_redis_host" "$REDIS_FQDN"
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_redis_port" 6379
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_redis_database" 1
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_redis_password" "$REDIS_PASSWORD"
+    /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_enable" true
+    /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_audit_notifications_enable" true
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.Enrichment_services_enable" true
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.Enrichment_services_url" "$MISP_MODULES_FQDN"
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.Import_services_enable" true
