@@ -31,8 +31,8 @@ fi
 # Enable OIDC Auth
 if [[ "${OIDC_ENABLED}" == "true" ]]; then
   echo -e "\nEnabling OIDC Authentication..."
-  sed -i -e "/'salt'/a\    'auth' => 'array('OidcAuth.Oidc')'," $MISP_APP_CONFIG_PATH/config.php
-  sed -i -e "$ i\   'OidcAuth' = [\n\
+  sed -i -e "/'salt'/a\    'auth' => array('OidcAuth.Oidc')," $MISP_APP_CONFIG_PATH/config.php
+  sed -i -e "$ i\   'OidcAuth' => [\n\
     'offline_access' => true,\n\
     'check_user_validity' => 300,\n\
     'provider_url' => \'${OIDC_PROVIDER_URL}\',\n\
