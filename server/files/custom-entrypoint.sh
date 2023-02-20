@@ -31,6 +31,7 @@ fi
 # Enable OIDC Auth
 if [[ "${OIDC_ENABLED}" == "true" ]]; then
   echo -e "\nEnabling OIDC Authentication..."
+  sed -i -e "s|// CakePlugin::load('CertAuth');|CakePlugin::load('OidcAuth');|g" $MISP_APP_CONFIG_PATH/bootstrap.php
   sed -i -e "/'salt'/a\    'auth' => array('OidcAuth.Oidc')," $MISP_APP_CONFIG_PATH/config.php
   sed -i -e "$ i\   'OidcAuth' => [\n\
     'offline_access' => true,\n\
@@ -48,6 +49,6 @@ if [[ "${OIDC_ENABLED}" == "true" ]]; then
   echo -e "\nEnabled OIDC Authentication!"
 fi
 
-echo -e "\nChaning config.php ownership to user www-data..."
-chown www-data:www-data $MISP_APP_CONFIG_PATH/config.php
+echo -e "\nChanging config.php,bootstrap.php ownership to user www-data..."
+chown www-data:www-data $MISP_APP_CONFIG_PATH/config.php $MISP_APP_CONFIG_PATH/bootstrap.php
 echo -e "Ownership changed!\n"
