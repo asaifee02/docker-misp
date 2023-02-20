@@ -157,9 +157,6 @@ ARG PHP_VER
 
 # nginx
     RUN rm /etc/nginx/sites-enabled/*; mkdir /run/php
-    # COPY files/etc/nginx/misp /etc/nginx/sites-available/misp
-    # COPY files/etc/nginx/misp-secure /etc/nginx/sites-available/misp-secure
-    # COPY files/etc/nginx/misp80 /etc/nginx/sites-available/misp80
     COPY files/etc/nginx/ /etc/nginx/sites-available/
 
 # Make a copy of the file store, so we can sync from it
@@ -172,15 +169,10 @@ ARG PHP_VER
     COPY files/etc/supervisor/supervisor.conf /etc/supervisor/conf.d/supervisord.conf
     COPY files/*.sh /
     RUN chmod a+x /*.sh
-    # COPY files/entrypoint_fpm.sh /
-    # COPY files/entrypoint_nginx.sh /
-    # COPY files/entrypoint_cron.sh /
-    # COPY files/entrypoint_workers.sh /
-    # COPY files/entrypoint.sh /
 
 # Configure MISP | Enforce permissions
-RUN find /var/www/MISP -not -user www-data -exec chown www-data.www-data {} + && \
-    find /var/www/MISP -perm 550 -type f -exec chmod 0550 {} + && find /var/www/MISP -perm 770 -type d -exec chmod 0770 {} + && \
+RUN chown -R www-data:www-data /var/www/MISP && \
+    chmod -R 0750 /var/www/MISP && \
     chmod -R g+ws /var/www/MISP/app/tmp && \
     chmod -R g+ws /var/www/MISP/app/files && \
     chmod -R g+ws /var/www/MISP/app/files/scripts/tmp

@@ -27,12 +27,12 @@ setup_cake_config(){
 }
 
 init_misp_config(){
-    [ -f $MISP_APP_CONFIG_PATH/bootstrap.php ] || cp $MISP_APP_CONFIG_PATH.dist/bootstrap.default.php $MISP_APP_CONFIG_PATH/bootstrap.php
-    [ -f $MISP_APP_CONFIG_PATH/database.php ] || cp $MISP_APP_CONFIG_PATH.dist/database.default.php $MISP_APP_CONFIG_PATH/database.php
-    [ -f $MISP_APP_CONFIG_PATH/core.php ] || cp $MISP_APP_CONFIG_PATH.dist/core.default.php $MISP_APP_CONFIG_PATH/core.php
-    [ -f $MISP_APP_CONFIG_PATH/config.php ] || cp $MISP_APP_CONFIG_PATH.dist/config.default.php $MISP_APP_CONFIG_PATH/config.php
-    [ -f $MISP_APP_CONFIG_PATH/email.php ] || cp $MISP_APP_CONFIG_PATH.dist/email.php $MISP_APP_CONFIG_PATH/email.php
-    [ -f $MISP_APP_CONFIG_PATH/routes.php ] || cp $MISP_APP_CONFIG_PATH.dist/routes.php $MISP_APP_CONFIG_PATH/routes.php
+    [ -f $MISP_APP_CONFIG_PATH/bootstrap.php ] || runuser -u www-data -- cp $MISP_APP_CONFIG_PATH.dist/bootstrap.default.php $MISP_APP_CONFIG_PATH/bootstrap.php
+    [ -f $MISP_APP_CONFIG_PATH/database.php ] || runuser -u www-data -- cp $MISP_APP_CONFIG_PATH.dist/database.default.php $MISP_APP_CONFIG_PATH/database.php
+    [ -f $MISP_APP_CONFIG_PATH/core.php ] || runuser -u www-data -- cp $MISP_APP_CONFIG_PATH.dist/core.default.php $MISP_APP_CONFIG_PATH/core.php
+    [ -f $MISP_APP_CONFIG_PATH/config.php ] || runuser -u www-data -- cp $MISP_APP_CONFIG_PATH.dist/config.default.php $MISP_APP_CONFIG_PATH/config.php
+    [ -f $MISP_APP_CONFIG_PATH/email.php ] || runuser -u www-data -- cp $MISP_APP_CONFIG_PATH.dist/email.php $MISP_APP_CONFIG_PATH/email.php
+    [ -f $MISP_APP_CONFIG_PATH/routes.php ] || runuser -u www-data -- cp $MISP_APP_CONFIG_PATH.dist/routes.php $MISP_APP_CONFIG_PATH/routes.php
 
     echo "Configure MISP | Set DB User, Password and Host in database.php"
     sed -i "s/localhost/$MYSQL_HOST/" $MISP_APP_CONFIG_PATH/database.php
@@ -59,6 +59,7 @@ init_misp_config(){
     /var/www/MISP/app/Console/cake Admin setSetting "MISP.log_user_ips" "true"
     /var/www/MISP/app/Console/cake Admin setSetting "MISP.log_new_audit" "true"
     /var/www/MISP/app/Console/cake Admin setSetting "MISP.log_new_audit_compress" "true"
+    /var/www/MISP/app/Console/cake Admin setSetting "MISP.download_gpg_from_homedir" "true"
 
     # GNUPG Settings
     /var/www/MISP/app/Console/cake Admin setSetting "GnuPG.email" "$GNUPG_EMAIL"
@@ -66,8 +67,9 @@ init_misp_config(){
     /var/www/MISP/app/Console/cake Admin setSetting "GnuPG.password" "$GNUPG_PASSPHRASE"
 
     # Plugin Settings
-    /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_redis_host" "$REDIS_FQDN"
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_enable" true
+    /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_redis_host" "$REDIS_FQDN"
+    /var/www/MISP/app/Console/cake Admin setSetting "Plugin.ZeroMQ_redis_password" "$REDIS_PASSWORD"
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.Enrichment_services_enable" true
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.Enrichment_services_url" "$MISP_MODULES_FQDN"
     /var/www/MISP/app/Console/cake Admin setSetting "Plugin.Import_services_enable" true
@@ -79,15 +81,6 @@ init_misp_config(){
     echo "Change number of workers"
     if [ ! -z "$WORKERS" ] && [ "$WORKERS" -gt "1" ]; then
         sed -i "s/start --interval/start -n $WORKERS --interval/" /var/www/MISP/app/Console/worker/start.sh
-    fi
-}
-
-init_misp_files(){
-    if [ ! -f /var/www/MISP/app/files/INIT ]; then
-        echo -e "\nCopying MISP Files due to INIT flag set..."
-        cp -R /var/www/MISP/app/files.dist/* /var/www/MISP/app/files
-        touch /var/www/MISP/app/files/INIT
-        echo -e "Done copying!\n"
     fi
 }
 
@@ -124,11 +117,8 @@ init_mysql(){
     fi
 }
 
-# Things we should do when we have the INITIALIZE Env Flag
-if [[ "$INIT" == true ]]; then
-    echo "Setup MySQL..." && init_mysql
-    echo "Setup MISP files dir..." && init_misp_files
-fi
+# Things we should do when MISP starts
+echo "Setup MySQL..." && init_mysql
 
 # Things that should ALWAYS happen
 echo "Configure Cake | Change Redis host to $REDIS_FQDN ... " && setup_cake_config
@@ -141,8 +131,9 @@ echo "... chmod 600 /var/www/MISP/app/Config/config.php /var/www/MISP/app/Config
 
 # Work around https://github.com/MISP/MISP/issues/5608
 if [[ ! -f /var/www/MISP/PyMISP/pymisp/data/describeTypes.json ]]; then
-    mkdir -p /var/www/MISP/PyMISP/pymisp/data/
-    ln -s /usr/local/lib/python3.7/dist-packages/pymisp/data/describeTypes.json /var/www/MISP/PyMISP/pymisp/data/describeTypes.json
+    echo -e "\nAdding Workaround..."
+    runuser -u www-data -- mkdir -p /var/www/MISP/PyMISP/pymisp/data/
+    runuser -u www-data -- ln -s /usr/local/lib/python3.7/dist-packages/pymisp/data/describeTypes.json /var/www/MISP/PyMISP/pymisp/data/describeTypes.json
 fi
 
 if [[ ! -L "/etc/nginx/sites-enabled/misp80" ]]; then

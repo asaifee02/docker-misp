@@ -7,8 +7,8 @@
 
 if [[ ! -d "${GNUPGHOME}" ]]; then
   echo -e "\nCreating Home Directory for GNUPG: ${GNUPGHOME}"
-  mkdir -p ${GNUPGHOME}
-  gpg --batch --gen-key <<EOF
+  runuser -u www-data -- mkdir -p ${GNUPGHOME}
+  runuser -u www-data -- gpg --batch --gen-key <<EOF
 %echo Generating GNUPG key...
 Key-Type: 1
 Key-Length: 4096
@@ -37,7 +37,7 @@ if [[ "${OIDC_ENABLED}" == "true" ]]; then
         'misp-user' => 3, // User\n\
         'misp-admin' => 1, // Admin\n\
     ],\n\
-    'default_org' => '${ORGNAME}',\n\
+    'default_org' => '${ORGNAME:-"MY_ORG"}',\n\
   ]," $MISP_APP_CONFIG_PATH/config.php
   cat $MISP_APP_CONFIG_PATH/config.php | grep -i OidcAuth -A 12
   echo -e "\nEnabled OIDC Authentication!"
