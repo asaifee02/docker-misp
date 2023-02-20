@@ -155,20 +155,11 @@ ARG PHP_VER
     # To use the scheduler worker for scheduled tasks, do the following:
         ;cp -fa /var/www/MISP/INSTALL/setup/config.php /var/www/MISP/app/Plugin/CakeResque/Config/config.php
 
-# nginx
-    RUN rm /etc/nginx/sites-enabled/*; mkdir /run/php
-    COPY files/etc/nginx/ /etc/nginx/sites-available/
-
 # Make a copy of the file store, so we can sync from it
     RUN cp -R /var/www/MISP/app/files /var/www/MISP/app/files.dist
 
 # Make a copy of the configurations, so we can sync from it
     RUN cp -R /var/www/MISP/app/Config /var/www/MISP/app/Config.dist
-
-# Entrypoints
-    COPY files/etc/supervisor/supervisor.conf /etc/supervisor/conf.d/supervisord.conf
-    COPY files/*.sh /
-    RUN chmod a+x /*.sh
 
 # Configure MISP | Enforce permissions
 RUN chown -R www-data:www-data /var/www/MISP && \
@@ -176,6 +167,15 @@ RUN chown -R www-data:www-data /var/www/MISP && \
     chmod -R g+ws /var/www/MISP/app/tmp && \
     chmod -R g+ws /var/www/MISP/app/files && \
     chmod -R g+ws /var/www/MISP/app/files/scripts/tmp
+
+# nginx
+    RUN rm /etc/nginx/sites-enabled/*; mkdir /run/php
+    COPY files/etc/nginx/ /etc/nginx/sites-available/
+
+# Entrypoints
+    COPY files/etc/supervisor/supervisor.conf /etc/supervisor/conf.d/supervisord.conf
+    COPY files/*.sh /
+    RUN chmod a+x /*.sh
 
 # Change Workdirectory
 WORKDIR /var/www/MISP
