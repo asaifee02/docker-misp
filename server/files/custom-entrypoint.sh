@@ -47,3 +47,7 @@ if [[ "${OIDC_ENABLED}" == "true" ]]; then
   cat $MISP_APP_CONFIG_PATH/config.php | grep -i OidcAuth -A 12
   echo -e "\nEnabled OIDC Authentication!"
 fi
+
+echo -e "\nChaning config.php ownership to user www-data..."
+chown www-data:www-data $MISP_APP_CONFIG_PATH/config.php
+echo -e "Ownership changed!\n"

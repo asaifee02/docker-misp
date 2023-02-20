@@ -168,6 +168,9 @@ RUN chown -R www-data:www-data /var/www/MISP && \
     chmod -R g+ws /var/www/MISP/app/files && \
     chmod -R g+ws /var/www/MISP/app/files/scripts/tmp
 
+# Change Workdirectory
+WORKDIR /var/www/MISP
+
 # nginx
     RUN rm /etc/nginx/sites-enabled/*; mkdir /run/php
     COPY files/etc/nginx/ /etc/nginx/sites-available/
@@ -176,8 +179,5 @@ RUN chown -R www-data:www-data /var/www/MISP && \
     COPY files/etc/supervisor/supervisor.conf /etc/supervisor/conf.d/supervisord.conf
     COPY files/*.sh /
     RUN chmod a+x /*.sh
-
-# Change Workdirectory
-WORKDIR /var/www/MISP
 
 ENTRYPOINT [ "/entrypoint.sh" ]
