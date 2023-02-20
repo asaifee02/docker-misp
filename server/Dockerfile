@@ -156,11 +156,11 @@ ARG PHP_VER
         ;cp -fa /var/www/MISP/INSTALL/setup/config.php /var/www/MISP/app/Plugin/CakeResque/Config/config.php
 
 # nginx
-    RUN rm /etc/nginx/sites-enabled/*; mkdir /run/php /etc/nginx/certs
-    COPY files/etc/nginx/misp /etc/nginx/sites-available/misp
-    COPY files/etc/nginx/misp-secure /etc/nginx/sites-available/misp-secure
-    COPY files/etc/nginx/misp80 /etc/nginx/sites-available/misp80
-    COPY files/etc/nginx/misp80-noredir /etc/nginx/sites-available/misp80-noredir
+    RUN rm /etc/nginx/sites-enabled/*; mkdir /run/php
+    # COPY files/etc/nginx/misp /etc/nginx/sites-available/misp
+    # COPY files/etc/nginx/misp-secure /etc/nginx/sites-available/misp-secure
+    # COPY files/etc/nginx/misp80 /etc/nginx/sites-available/misp80
+    COPY files/etc/nginx/ /etc/nginx/sites-available/
 
 # Make a copy of the file store, so we can sync from it
     RUN cp -R /var/www/MISP/app/files /var/www/MISP/app/files.dist
@@ -170,12 +170,22 @@ ARG PHP_VER
 
 # Entrypoints
     COPY files/etc/supervisor/supervisor.conf /etc/supervisor/conf.d/supervisord.conf
-    COPY files/entrypoint_fpm.sh /
-    COPY files/entrypoint_nginx.sh /
-    COPY files/entrypoint_cron.sh /
-    COPY files/entrypoint_workers.sh /
-    COPY files/entrypoint.sh /
-    ENTRYPOINT [ "/entrypoint.sh" ]
+    COPY files/*.sh /
+    RUN chmod a+x /*.sh
+    # COPY files/entrypoint_fpm.sh /
+    # COPY files/entrypoint_nginx.sh /
+    # COPY files/entrypoint_cron.sh /
+    # COPY files/entrypoint_workers.sh /
+    # COPY files/entrypoint.sh /
+
+# Configure MISP | Enforce permissions
+RUN find /var/www/MISP -not -user www-data -exec chown www-data.www-data {} + && \
+    find /var/www/MISP -perm 550 -type f -exec chmod 0550 {} + && find /var/www/MISP -perm 770 -type d -exec chmod 0770 {} + && \
+    chmod -R g+ws /var/www/MISP/app/tmp && \
+    chmod -R g+ws /var/www/MISP/app/files && \
+    chmod -R g+ws /var/www/MISP/app/files/scripts/tmp
 
 # Change Workdirectory
-    WORKDIR /var/www/MISP
+WORKDIR /var/www/MISP
+
+ENTRYPOINT [ "/entrypoint.sh" ]
