@@ -52,3 +52,6 @@ fi
 echo -e "\nChanging config.php,bootstrap.php ownership to user www-data..."
 chown www-data:www-data $MISP_APP_CONFIG_PATH/config.php $MISP_APP_CONFIG_PATH/bootstrap.php
 echo -e "Ownership changed!\n"
+
+echo "\n=====> Streaming MISP Logs <====="
+tail -F /var/www/MISP/app/tmp/logs/debug.log /var/www/MISP/app/tmp/logs/error.log &
