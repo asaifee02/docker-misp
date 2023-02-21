@@ -53,5 +53,7 @@ echo -e "\nChanging config.php,bootstrap.php ownership to user www-data..."
 chown www-data:www-data $MISP_APP_CONFIG_PATH/config.php $MISP_APP_CONFIG_PATH/bootstrap.php
 echo -e "Ownership changed!\n"
 
+[[ ! -f "/var/www/MISP/app/tmp/logs/debug.log" ]] && runuser -u www-data -- touch /var/www/MISP/app/tmp/logs/debug.log && echo -e "\nCreated debug log file!" || echo -e "\nDebug log file already exists."
+[[ ! -f "/var/www/MISP/app/tmp/logs/error.log" ]] && runuser -u www-data -- touch /var/www/MISP/app/tmp/logs/error.log && echo -e "\nCreated error log file!" || echo -e "\nError log file already exists."
 echo "\n=====> Streaming MISP Logs <====="
 tail -F /var/www/MISP/app/tmp/logs/debug.log /var/www/MISP/app/tmp/logs/error.log &
