@@ -168,6 +168,10 @@ RUN chown -R www-data:www-data /var/www/MISP && \
     chmod -R g+ws /var/www/MISP/app/files && \
     chmod -R g+ws /var/www/MISP/app/files/scripts/tmp
 
+# Sending MISP Logs output to stdout and stderr
+RUN runuser -u www-data -- ln -f -s /dev/stdout /var/www/MISP/app/tmp/logs/debug.log && \
+    runuser -u www-data -- ln -f -s /dev/stderr /var/www/MISP/app/tmp/logs/error.log
+
 # Change Workdirectory
 WORKDIR /var/www/MISP
 

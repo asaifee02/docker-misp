@@ -152,11 +152,6 @@ if [[ "$DISIPV6" == true ]]; then
     sed -i "s/listen \[\:\:\]/\#listen \[\:\:\]/" /etc/nginx/sites-enabled/misp80
 fi
 
-echo -e "\nSending MISP Logs output to stdout and stderr ..."
-runuser -u www-data -- ln -f -s /dev/stdout /var/www/MISP/app/tmp/logs/debug.log
-runuser -u www-data -- ln -f -s /dev/stderr /var/www/MISP/app/tmp/logs/error.log
-echo -e "Configured MISP Log output!\n"
-
 if [[ -x /custom-entrypoint.sh ]]; then
     /custom-entrypoint.sh
 fi
